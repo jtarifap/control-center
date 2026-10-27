@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taridev Control Center · Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f8;--surf:#fff;--ink:#15233a;--mut:#5d6b82;--line:#dde3ec;--side:#10243f;--acc:#0c8f83;--acc2:#e3f5f2;--warn:#b45309;--warn2:#fdf0dc;--bad:#b42318;--bad2:#fde8e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1624;--surf:#13233a;--ink:#e6edf7;--mut:#93a3bb;--line:#223653;--side:#091524;--acc:#2bc4b4;--acc2:#12353a;--warn:#f0b05a;--warn2:#3a2c14;--bad:#f28b82;--bad2:#3b1d1b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1624;--surf:#13233a;--ink:#e6edf7;--mut:#93a3bb;--line:#223653;--side:#091524;--acc:#2bc4b4;--acc2:#12353a;--warn:#f0b05a;--warn2:#3a2c14;--bad:#f28b82;--bad2:#3b1d1b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 Manrope,system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* login */
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.brandside{background:var(--side);color:#e8eef7;padding:56px;display:flex;flex-direction:column;justify-content:space-between}
+.brandside h1{font-size:38px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 16px;max-width:15ch}
+.brandside p{color:#a9b8cf;max-width:40ch;margin:0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--acc);display:grid;place-items:center;color:#06231f;font-style:normal;font-weight:800}
+.formside{display:grid;place-items:center;padding:32px;background:var(--bg)}
+.form{width:100%;max-width:360px}
+.form h2{margin:0 0 4px;font-size:24px;letter-spacing:-.01em}
+.form p{margin:0 0 24px;color:var(--mut)}
+label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);font:inherit}
+.btn{border:0;background:var(--acc);color:#fff;font-weight:700;padding:11px 16px;border-radius:8px}
+:root[data-theme="dark"] .btn,.dk .btn{color:#06231f}
+.btn.full{width:100%;margin-top:22px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.hint{font-size:12px;color:var(--mut);margin-top:14px}
+/* app */
+.app{display:none;min-height:100vh;grid-template-columns:232px 1fr}
+.side{background:var(--side);color:#cfd9e8;padding:20px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side .logo{color:#fff;padding:4px 10px 18px}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;border:0;background:none;text-align:left;width:100%;color:inherit;font-weight:600}
+.nav svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav:hover{background:rgba(255,255,255,.07)}
+.nav[aria-current=page]{background:var(--acc);color:#06231f}
+.side .sp{flex:1}
+.main{min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:14px 28px;background:var(--surf);border-bottom:1px solid var(--line)}
+.top h2{margin:0;font-size:18px;flex:1}
+.av{width:34px;height:34px;border-radius:50%;background:var(--acc2);color:var(--acc);display:grid;place-items:center;font-weight:800;font-size:13px}
+.content{padding:28px;max-width:1180px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px}
+.panel h3{margin:0 0 14px;font-size:15px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.head p{margin:0;color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:20px;background:var(--surf);border:1px solid var(--line);border-radius:14px}
+.stat{padding:18px 20px;border-right:1px solid var(--line)}
+.stat:last-child{border:0}
+.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.stat span{color:var(--mut);font-size:13px}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+.bars{display:flex;align-items:flex-end;gap:14px;height:170px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;font-size:12px;color:var(--mut)}
+.bar div{width:100%;background:var(--acc);border-radius:6px 6px 2px 2px;opacity:.85}
+.bar:last-child div{opacity:1}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--mut);font-size:13px;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--bg)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:var(--acc2);color:var(--acc)}
+.pill.w{background:var(--warn2);color:var(--warn)}
+.pill.b{background:var(--bad2);color:var(--bad)}
+.pill.n{background:var(--bg);color:var(--mut)}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border:0}
+.list small{color:var(--mut);display:block}
+.mods{display:grid;gap:0}
+.mod{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.mod:last-child{border:0}
+.mod .t{flex:1}
+.mod small{color:var(--mut);display:block}
+.sw{width:42px;height:24px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw[aria-checked=true]{background:var(--acc)}
+.sw[aria-checked=true]::after{transform:translateX(18px)}
+.back{background:none;border:0;color:var(--mut);padding:0;margin-bottom:10px;font-weight:600}
+.cfg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ck{color:var(--acc);font-weight:800}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (max-width:860px){
+.login{grid-template-columns:1fr}.brandside{padding:28px;gap:28px}.brandside h1{font-size:28px}
+.app{grid-template-columns:1fr}
+.side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:10px}
+.side .logo,.side .sp{display:none}.nav{width:auto;white-space:nowrap}
+.top{padding:12px 16px}.content{padding:16px}
+.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
+.two,.cfg{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<section class="login" id="login">
+  <div class="brandside">
+    <div class="logo"><i>T</i>Taridev Control Center</div>
+    <div>
+      <h1>Cada cliente, cada app, cada plan. En un solo lugar.</h1>
+      <p>Da de alta clientes, asigna planes y decide qué secciones ve cada uno, sin tocar código.</p>
+    </div>
+    <p style="font-size:13px">Demo de interfaz con datos de ejemplo</p>
+  </div>
+  <div class="formside">
+    <div class="form">
+      <h2>Iniciar sesión</h2>
+      <p>Accede al panel de administración.</p>
+      <label for="em">Correo electrónico</label>
+      <input id="em" type="email" value="admin@taridev.com" autocomplete="off">
+      <label for="pw">Contraseña</label>
+      <input id="pw" type="password" value="demo1234">
+      <label for="role">Rol de demostración</label>
+      <select id="role"><option value="superadmin">Superadmin</option><option value="support">Soporte</option><option value="billing">Facturación</option><option value="app_owner">Responsable de app</option></select>
+      <button class="btn full" id="go">Entrar</button>
+      <div class="hint">Es una demo: cualquier dato te deja pasar.</div>
+    </div>
+  </div>
+</section>
+
+<div class="app" id="app">
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="top"><h2 id="title"></h2><button class="btn ghost" id="theme" aria-label="Cambiar tema">Tema</button><div class="av" id="roleBadge" title="Rol actual">--</div></header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+var $=function(s){return document.querySelector(s)};
+var ic={
+dash:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
+cli:'<path d="M3 21V7l9-4 9 4v14M9 21v-6h6v6"/>',
+app:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+pla:'<path d="M12 2l3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1z"/>',
+usu:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 4a4 4 0 010 8M22 21c0-3-2-5-4-5"/>',
+ven:'<path d="M4 3h16v18l-3-2-3 2-2-2-2 2-3-2-3 2zM8 8h8M8 12h8"/>',
+aud:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+sec:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+act:'<path d="M7 12h10M7 12l4-4M7 12l4 4"/>',
+ai:'<path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H9l-5 3V6z"/>',
+out:'<path d="M9 21H5V3h4M16 17l5-5-5-5M21 12H9"/>'};
+var pages=[['dash','Panel general'],['cli','Clientes'],['app','Aplicaciones'],['sec','Secciones'],['pla','Planes'],['act','Activaciones'],['usu','Usuarios y roles'],['ai','Guardrails IA'],['ven','Ventas'],['aud','Auditoría']];
+var mods=['Chat mutuo','Lectura de documentos','Cambio de voz','Informes y estadísticas','API pública','Multiidioma','Cambio de avatar','Cambio de fondo'];
+var planes=[{n:'Básico',p:29,m:[1,1,0,0,0,0,1,0]},{n:'Pro',p:79,m:[1,1,1,1,0,0,1,1]},{n:'Empresa',p:189,m:[1,1,1,1,1,1,1,1]}];
+var apps=[{n:'Aura Municipal',v:'2.4.1',sec:8,cli:18,est:'Activo'},{n:'Paseta',v:'1.8.0',sec:8,cli:12,est:'Activo'},{n:'Gestor de envíos',v:'1.2.3',sec:4,cli:6,est:'Activo'},{n:'IAvatar',v:'0.9.0',sec:9,cli:2,est:'Prueba'},{n:'Traductor en vivo',v:'0.3.0',sec:2,cli:0,est:'Prueba'}];
+var activations=[{dep:'dep-vilanova-aura',cli:'Ayuntamiento de Vilanova',app:'Aura Municipal',rev:'rev-12',est:'Publicado'},{dep:'dep-costadorada-aura',cli:'Inmobiliaria Costa Dorada',app:'Aura Municipal',rev:'rev-9',est:'Publicado'},{dep:'dep-ribes-genv',cli:'Gestoría Ribes',app:'Gestor de envíos',rev:'rev-3',est:'Borrador'},{dep:'dep-santjordi-paseta',cli:'Colegio Sant Jordi',app:'Paseta',rev:'rev-7',est:'Publicado'},{dep:'dep-dental-paseta',cli:'Clínica Dental Mar',app:'Paseta',rev:'rev-2',est:'Suspendido'}];
+var aiSources=[{cli:'Ayuntamiento de Vilanova',fuentes:['Web municipal','Ordenanzas PDF','Agenda cultural'],scope:'solo fuentes asignadas',prompt:'Responder como asistente municipal sin salir del corpus municipal.'},{cli:'Inmobiliaria Costa Dorada',fuentes:['Catálogo propiedades','FAQ comercial'],scope:'catálogo y FAQs',prompt:'Actuar como comercial inmobiliario y no inventar datos.'}];
+var clientes=[
+{n:'Ayuntamiento de Vilanova',app:'Aura Municipal',plan:1,est:'Activo',u:14,ov:{4:true}},
+{n:'Inmobiliaria Costa Dorada',app:'Aura Municipal',plan:0,est:'Activo',u:3,ov:{}},
+{n:'Gestoría Ribes',app:'Gestor de envíos',plan:1,est:'Prueba',u:6,ov:{3:false}},
+{n:'Colegio Sant Jordi',app:'Paseta',plan:2,est:'Activo',u:41,ov:{}},
+{n:'Clínica Dental Mar',app:'Paseta',plan:0,est:'Suspendido',u:4,ov:{}}];
+var st={v:'dash',c:null,role:'user'};
+const CTRL_DATA={apps:[],sections:[],clients:[],clientes:[],despliegues:[],configs:[],plans:[],audits:[]};
+function sbHeaders(){return {apikey:ANON_KEY,Authorization:'Bearer '+(localStorage.getItem('td.token')||''),Accept:'application/json','Content-Type':'application/json'}}
+async function sbJson(path){
+ const r=await fetch(AUTH_URL+'/rest/v1/'+path,{headers:sbHeaders()});
+ const t=await r.text(); if(!r.ok) throw new Error(t.slice(0,300));
+ try{return t?JSON.parse(t):[]} catch(e){throw new Error(t.slice(0,300))}
+}
+async function sbPost(table,payload){
+ const r=await fetch(AUTH_URL+'/rest/v1/'+table,{method:'POST',headers:sbHeaders(),body:JSON.stringify(payload)});
+ const t=await r.text(); if(!r.ok) throw new Error(t.slice(0,500)); return t?JSON.parse(t):{};
+}
+function slugify(v){return String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'cliente'}
+async function sbDelete(table,pk,val){
+  const r=await fetch(AUTH_URL+'/rest/v1/'+table+'?'+pk+'=eq.'+encodeURIComponent(val),{method:'DELETE',headers:sbHeaders()});
+  const t=await r.text(); if(!r.ok) throw new Error(t.slice(0,500)); return t?JSON.parse(t):{};
+}
+async function editClient(id){
+  var cli=CTRL_DATA.clientes.find(function(x){return String(x.id)===String(id)});
+  if(!cli){toast('Cliente no encontrado');return}
+  var name=window.prompt('Nuevo nombre del cliente', cli.n); if(name===null) return;
+  var estado=window.prompt('Nuevo estado (prueba, activo, suspendido, cancelado)', cli.est); if(estado===null) return;
+  var email=window.prompt('Correo del cliente', cli.email||''); if(email===null) return;
+  var patch={};
+  if(name.trim() && name.trim()!==cli.n) patch.nombre=name.trim();
+  if(estado.trim() && estado!==cli.est) patch.estado=estado.trim();
+  if(email.trim()!== (cli.email||'')) patch.email=email.trim();
+  if(!Object.keys(patch).length){toast('Sin cambios');return}
+  try{
+    await sbPatch('clientes','id',id,patch);
+    await auditAction({accion:'update',entidadTipo:'cliente',entidadId:id,descripcion:'Cliente editado: ' + cli.n,detalle:patch});
+    toast('Cliente actualizado');
+    await refreshControlData();
+  }catch(e){toast('Error al editar: '+e.message)}
+}
+async function deleteClient(id){
+  var cli=CTRL_DATA.clientes.find(function(x){return String(x.id)===String(id)});
+  if(!cli) return;
+  if(!window.confirm('Borrar el cliente "'+cli.n+'"? Se eliminarán sus despliegues y configuraciones permanentemente.')) return;
+  try{
+    await sbDelete('clientes','id',id);
+    await auditAction({accion:'delete',entidadTipo:'cliente',entidadId:id,descripcion:'Cliente borrado: '+cli.n,detalle:{nombre:cli.n}});
+    toast('Cliente borrado');
+    if(st.clienteId===id){st.clienteId=null;st.despliegueId=null;}
+    await refreshControlData();
+  }catch(e){toast('Error al borrar: '+e.message)}
+}
+
+async function sbPatch(table,pk,val,payload){
+  const r=await fetch(AUTH_URL+'/rest/v1/'+table+'?'+pk+'=eq.'+encodeURIComponent(val),{method:'PATCH',headers:sbHeaders(),body:JSON.stringify(payload)});
+  const t=await r.text(); if(!r.ok) throw new Error(t.slice(0,500)); return t?JSON.parse(t):{};
+}
+async function saveDeploymentConfig(depId){
+  const dep=CTRL_DATA.despliegues.find(function(d){return d.id===depId}); if(!dep) return;
+  const cli=CTRL_DATA.clientes.find(function(c){return c.id===dep.clienteId});
+  const cfg=CTRL_DATA.configs.find(function(c){return c.deployId===depId});
+  const sectionNodes=document.querySelectorAll('[data-cfgsection]');
+  const sections=[]; sectionNodes.forEach(function(n){if(n.getAttribute('aria-checked')==='true') sections.push(n.getAttribute('data-cfgsection'))});
+  const subdominio=document.getElementById('cfgSubdominio')?.value?.trim().toLowerCase().replace(/[^a-z0-9-]+/g,'-')||'';
+  const guardrail=document.getElementById('cfgGuardrail')?.value?.trim()||'';
+  const fuentesIA=parseList(document.getElementById('cfgFuentesIA')?.value||'');
+  const temasPermitidos=parseList(document.getElementById('cfgTemasPermitidos')?.value||'');
+  const temasProhibidos=parseList(document.getElementById('cfgTemasProhibidos')?.value||'');
+  const maxTokens=document.getElementById('cfgMaxTokens')?.value?.trim()||'';
+  const assetsAvatares=parseList(document.getElementById('cfgAvataresDespliegue')?.value||'');
+  const assetsFondos=parseList(document.getElementById('cfgFondosIA')?.value||'');
+  const docsAutorizados=parseList(document.getElementById('cfgDocsIA')?.value||'');
+  const parseList=function(v){return String(v||'').split(/[,;]/).map(s=>s.trim()).filter(Boolean)};
+  const payload={
+    despliegue_id:depId,
+    nombre_visible:document.getElementById('cfgNombre')?.value?.trim()||null,
+    idiomas:parseList(document.getElementById('cfgIdiomas')?.value||'es'),
+    fondo_ids:parseList(document.getElementById('cfgFondo')?.value||''),
+    avatar_por_defecto: (document.getElementById('cfgAvatar')?.value||'').trim()||null,
+    secciones_visibles:sections,
+    prompt_perfil: (document.getElementById('cfgPrompt')?.value||''),
+    guardrail_ia: guardrail,
+    fuentes_ia: fuentesIA,
+    temas_autorizados_ia: temasPermitidos,
+    temas_prohibidos_ia: temasProhibidos,
+    max_tokens_ia: maxTokens ? Number(maxTokens) : null,
+    assets_avatares: assetsAvatares,
+    assets_fondos: assetsFondos,
+    documentos_autorizados: docsAutorizados
+      };
+  const planId=document.getElementById('cfgPlan')?.value||'';
+  const descriptor = subdominio ? (subdominio + "." + slugify(dep.app)) : (dep.descriptor || null);
+  const clientState=document.getElementById('cfgClienteEstado')?.value||'';
+  const clientName=document.getElementById('cfgClienteNombre')?.value?.trim()||'';
+  const deployState=document.getElementById('cfgEstado')?.value||dep.est;
+  try{
+    if(cfg){await sbPatch('configuracion_despliegue','despliegue_id',depId,payload);}
+    else {await sbPost('configuracion_despliegue', payload)}
+    if(clientName||clientState) await sbPatch('clientes','id',cli.id,{ ...(clientName?{nombre:clientName}:{}) , ...(clientState?{estado:clientState}:{}) });
+    const patchDeploy={estado:deployState};
+    if(planId) patchDeploy.paquete_id=planId;
+    if(descriptor) patchDeploy.descriptor=descriptor;
+    if(subdominio) patchDeploy.subdominio=subdominio;
+    await sbPatch('despliegues','id',depId,patchDeploy);
+    await auditAction({accion:'update',entidadTipo:'despliegue',entidadId:depId,descripcion:'Configuración guardada para ' + dep.app,detalle:payload});
+    toast('Configuración guardada');
+    await refreshControlData();
+    st.despliegueId=depId;
+  }catch(e){toast('Error al guardar: '+e.message)}
+}
+async function createClient(){
+ var name=window.prompt('Nombre del nuevo cliente'); if(!name) return;
+ try{
+  await sbPost('clientes',{nombre:name,slug:slugify(name),email:'',estado:'prueba'});
+  await auditAction({accion:'create',entidadTipo:'cliente',descripcion:'Alta de cliente ' + name,detalle:{nombre:name,slug:slugify(name),email:'',estado:'prueba'}});
+  toast('Cliente creado y recargado');
+  await refreshControlData();
+ }catch(e){toast('Error al crear cliente: '+e.message)}
+}
+async function relateDeployment(clientId){
+ var apps=CTRL_DATA.apps||[];
+ var assigned=new Set((CTRL_DATA.despliegues||[]).filter(function(d){return String(d.clienteId)===String(clientId)}).map(function(d){return d.appId}));
+ var available=apps.filter(function(a){return a.id && !assigned.has(a.id)});
+ if(!apps.length){toast('No hay apps cargadas desde Supabase');return}
+ if(!available.length){toast('Este cliente ya tiene todas las apps disponibles');return}
+ var app=available[Number(window.prompt('Aplicación disponible: indicar número\n'+available.map(function(a,i){return (i+1)+'. '+a.n}).join('\n')))-1];
+  var subdominio = window.prompt('Subdominio de acceso (p. ej. aytordera)', '');
+ if(!app||!app.id){toast('Selección de aplicación no válida');return}
+ try{
+  var clientRel=CTRL_DATA.clientes.find(function(x){return String(x.id)===String(clientId)});
+ var depPayload={cliente_id:clientId,aplicacion_id:app.id,paquete_id:(CTRL_DATA.plans[0]?.id||null),entorno:'produccion',estado:'borrador',descriptor:(subdominio?slugify(subdominio)+'.'+slugify(app.n):slugify(clientRel?.slug||clientRel?.n||'cliente')+'.'+slugify(app.n))};
+ if(subdominio) depPayload.subdominio=slugify(subdominio);
+ await sbPost('despliegues',depPayload);
+   await auditAction({accion:'relate',entidadTipo:'despliegue',entidadId:depPayload.cliente_id,descripcion:'Relación app ' + app.n + ' para cliente ' + depPayload.cliente_id,detalle:depPayload});
+  toast('App relacionada al cliente');
+  await refreshControlData();
+ }catch(e){toast('Error al relacionar app: '+e.message)}
+}
+function escapeHtml(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function escapeAttr(v){return escapeHtml(v)}
+async function fetchDeployments(){try{return await sbJson('despliegues?select=id,cliente_id,aplicacion_id,paquete_id,entorno,estado,creado_en,subdominio,aplicaciones(codigo,nombre),planes(name)');}catch(e){try{return await sbJson('despliegues?select=id,cliente_id,aplicacion_id,paquete_id,entorno,estado,creado_en,subdominio,aplicaciones(codigo,nombre),packages(name)');}catch(e2){return [];}}}
+async function fetchPlanes(){try{return await sbJson('planes?select=*');}catch(e){try{return await sbJson('packages?select=*');}catch(e2){return [];}}}
+async function auditAction(payload){ try { await sbPost('auditoria', { actor_email: (payload && payload.actorEmail) || localStorage.getItem('td.email') || 'desconocido', actor_rol: (payload && payload.actorRole) || localStorage.getItem('td.role') || 'unknown', accion: payload?.accion || 'unknown', entidad_tipo: payload?.entidadTipo || 'system', entidad_id: String(payload?.entidadId || ''), descripcion: payload?.descripcion || '', detalle: payload?.detalle || {} }); } catch (e) { console.error('audit', e); } }
+async function loadControlData(){
+ const [apps, sections, tenants, clientes, despliegues, planes, configs, audits]=await Promise.all([
+  sbJson('aplicaciones?select=*'),
+  sbJson('secciones_aplicacion?select=clave,nombre,tipo,activa,aplicacion_id,orden'),
+  sbJson('tenants?select=id,slug,name,subdomain'),
+  sbJson('clientes?select=*').catch(()=>[]),
+  fetchDeployments(),
+  fetchPlanes(),
+  sbJson('configuracion_despliegue?select=*').catch(()=>[]),
+  sbJson('auditoria?select=*&order=creado_en.desc&limit=300').catch(()=>[])
+ ]);
+ const appMap=Object.fromEntries(apps.map(a=>[a.id,a]));
+ CTRL_DATA.apps=apps.map(a=>({id:a.id,n:a.nombre||a.codigo,v:'-',sec:sections.filter(s=>s.aplicacion_id===a.id).length,u:'-',est:a.estado||'Activo',origin:'supabase'}));
+ CTRL_DATA.sections=sections.map(s=>({key:s.clave,nombre:s.nombre,app:appMap[s.aplicacion_id]?.nombre||'App',tipo:s.tipo,activa:s.activa}));
+ CTRL_DATA.clients=tenants.map(t=>({n:t.name||t.slug,app:'IAvatar (AURA)',plan:'Demo',est:'Activo',u:0,origin:'supabase'}));
+ CTRL_DATA.clientes=clientes.map(c=>({id:c.id,n:c.nombre,slug:c.slug,email:c.email,est:c.estado,origin:'supabase'}));
+ CTRL_DATA.despliegues=despliegues.map(d=>({id:d.id,appId:d.aplicacion_id,clienteId:d.cliente_id,paqueteId:d.paquete_id,subdominio:d.subdominio||'',descriptor:d.descriptor||'',app:d.aplicaciones?.nombre||d.aplicaciones?.codigo||'App',plan:d.planes?.name||d.packages?.name||'-',entorno:d.entorno,est:d.estado,origin:'supabase'}));
+ CTRL_DATA.configs=configs.map(c=>({deployId:c.despliegue_id,nombreVisible:c.nombre_visible||'',idiomas:c.idiomas||['es'],fondos:c.fondo_ids||[],avatar:c.avatar_por_defecto||'',secciones:c.secciones_visibles||[],prompt:c.prompt_perfil||'',guardrail:c.guardrail_ia||'',fuentesIA:c.fuentes_ia||[],temasPermitidos:c.temas_autorizados_ia||[],temasProhibidos:c.temas_prohibidos_ia||[],maxTokens:c.max_tokens_ia||'',avatares:c.assets_avatares||[],fondosIA:c.assets_fondos||[],documentos:c.documentos_autorizados||'',extra:c.limite_extra||'',source:'supabase'}));
+ CTRL_DATA.plans=((planes||[]).map(p=>({id:p.id,n:p.name||p.n||'Plan',sections:p.sections||[]})));
+ CTRL_DATA.audits=(audits||[]).map(a=>({id:a.id,actor:a.actor_email,role:a.actor_rol,accion:a.accion,tipo:a.entidad_tipo,entidadId:a.entidad_id,desc:a.descripcion||'',detalle:a.detalle||{},creado:a.creado_en}));
+ toast('BD conectada: '+CTRL_DATA.apps.length+' apps, '+CTRL_DATA.sections.length+' secciones, '+CTRL_DATA.clientes.length+' clientes'+(CTRL_DATA.despliegues.length? ', '+CTRL_DATA.despliegues.length+' despliegues':''));
+ return CTRL_DATA;
+}
+function refreshControlData(){
+ return loadControlData().catch(e=>{console.error(e);toast('No se pudo cargar Supabase: '+e.message);return CTRL_DATA;}).then(d=>{try{show(st.v||'dash')}catch(e){}});
+}
+function refreshControlData(){
+ return loadControlData().catch(e=>{console.error(e);toast('No se pudo cargar Supabase: '+e.message);return CTRL_DATA;}).then(d=>{try{show(st.v||'dash')}catch(e){}});
+}
+var AUTH_URL='https://mlhivdlfdgfahmsvsyiw.supabase.co';
+var ANON_KEY='sb_publishable_uLfwapzM5aK1bKFRtBc6RQ_7LgYbrAD';
+async function supabaseLogin(email,password){
+  const r=await fetch(AUTH_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.error_description||d.error||d.msg||'Credenciales no válidas');
+  localStorage.setItem('td.token',d.access_token||'');
+  localStorage.setItem('td.role',d.user?.app_metadata?.role||'user');
+  localStorage.setItem('td.email',d.user?.email||email);
+  st.role=localStorage.getItem('td.role');
+  return d;
+}
+function clearAuth(){localStorage.removeItem('td.token');localStorage.removeItem('td.role');localStorage.removeItem('td.email');st.role='user';}
+function ico(k){return '<svg viewBox="0 0 24 24">'+ic[k]+'</svg>'}
+function pill(e){return '<span class="pill '+({Activo:'',Prueba:'w',Suspendido:'b',Pagada:'',Pendiente:'w',Vencida:'b'}[e]||'n')+'">'+e+'</span>'}
+function eff(c,i){var o=c.ov[i];return o===undefined?!!planes[c.plan].m[i]:o}
+function setRoleUI(role){
+  st.role=role||'user';
+  var badge=$('#roleBadge');
+  if(badge){
+    badge.textContent=st.role;
+    badge.style.fontSize='11px';
+    badge.style.padding='0 6px';
+  }
+  localStorage.setItem('td.role',st.role);
+}
+function rolePages(role){
+  if(role==='superadmin') return pages;
+  if(role==='adminapp') return pages.filter(function(p){return p[0]!=='ai'&&p[0]!=='act'?true:true});
+  if(role==='billing') return pages.filter(function(p){return p[0]==='dash'||p[0]==='ven'||p[0]==='usu'});
+  if(role==='user') return pages.filter(function(p){return p[0]==='dash'});
+  return [['dash','Panel general']];
+}
+function nav(){
+  var visible=rolePages(st.role);
+  $('#side').innerHTML='<div class="logo"><i>T</i>Control Center</div>'+visible.map(function(p){
+    return '<button class="nav" data-go="'+p[0]+'"'+(st.v===p[0]||(st.v==='cfg'&&p[0]==='cli')?' aria-current="page"':'')+'>'+ico(p[0])+p[1]+'</button>'}).join('')
+    +'<div class="sp"></div><button class="nav" id="out">'+ico('out')+'Cerrar sesión</button>';
+}
+function tbl(h,rows,click){
+  return '<div class="tw"><table><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'
+  +rows.map(function(r,i){return '<tr'+(click?' class="click" data-c="'+i+'"':'')+'>'+r.map(function(x){return '<td>'+x+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>';
+}
+var V={
+dash:function(){
+  var m=[['Ene',62],['Feb',71],['Mar',68],['Abr',84],['May',97],['Jun',112]];
+  return '<div class="stats"><div class="stat"><b>38</b><span>Clientes activos</span></div><div class="stat"><b>12.480 €</b><span>Ingresos del mes</span></div><div class="stat"><b>5</b><span>Aplicaciones en producción</span></div><div class="stat"><b>7</b><span>Renovaciones en 30 días</span></div></div>'
+  +'<div class="two"><div class="panel"><h3>Ingresos recurrentes (cientos de €)</h3><div class="bars">'+m.map(function(x){return '<div class="bar"><span>'+x[1]+'</span><div style="height:'+x[1]*1.1+'px"></div>'+x[0]+'</div>'}).join('')+'</div></div>'
+  +'<div class="panel"><h3>Próximos vencimientos</h3><ul class="list"><li><div>Gestoría Ribes<small>Fin de prueba</small></div><span class="pill w">3 días</span></li><li><div>Colegio Sant Jordi<small>Renovación anual</small></div><span class="pill n">12 días</span></li><li><div>Ayuntamiento de Vilanova<small>Renovación mensual</small></div><span class="pill n">19 días</span></li></ul></div></div>';
+},
+cli:function(){
+  var real=CTRL_DATA.clientes;
+  var rows=real.length?real.map(function(c){
+    var deps=CTRL_DATA.despliegues.filter(function(d){return d.clienteId===c.id});
+    return [escapeHtml(c.n) + (c.email?'<br><small style="color:var(--mut)">' + escapeHtml(c.email) + '</small>':''), deps.length?deps.map(function(d){return '<button class="btn ghost" data-opencfg="'+d.id+'">'+d.app+' ('+d.est+')</button>'}).join(' ') : 'Sin apps relacionadas', pill(c.est), '<button class="btn ghost" data-editclient="'+c.id+'">Editar</button><button class="btn ghost" data-deleteclient="'+c.id+'">Borrar</button><button class="btn ghost" data-newdeploy="'+c.id+'">Relacionar app</button>'];
+  }):clientes.map(function(c){return [c.n,c.app,planes[c.plan].n,c.u,pill(c.est),'<button class="btn ghost" data-t="Funciones reales disponibles tras cargar Supabase">Demo</button>']});
+  return '<div class="head"><p>Clientes reales desde Supabase; edita, borra o relaciona apps.</p><button class="btn" data-newclient="1">Nuevo cliente</button></div><div class="panel">'
+  +tbl(['Cliente','Despliegues - Configurar','Estado','Acción'],rows,false)+'</div>';
+},
+cfg:function(){
+  var dep = st.despliegueId ? CTRL_DATA.despliegues.find(function(d){return d.id===st.despliegueId}) : null;
+  var cli = dep ? CTRL_DATA.clientes.find(function(c){return c.id===dep.clienteId}) : (st.clienteId ? CTRL_DATA.clientes.find(function(c){return c.id===st.clienteId}) : null);
+  if (!dep && cli) dep = CTRL_DATA.despliegues.find(function(d){return d.clienteId===cli.id});
+  if (!dep) {
+    return '<div class="panel"><h3>Configuración de despliegue</h3><p>Selecciona un despliegue con el botón "Configurar · App" desde Clientes. También puedes crear una relación primero.</p></div>';
+  }
+  st.clienteId = dep.clienteId;
+  var cfg = CTRL_DATA.configs.find(function(c){return c.deployId===dep.id}) || { nombreVisible:cli.n, idiomas:['es'], fondos:[], avatar:'', secciones:[], prompt:'' };
+  var app = CTRL_DATA.apps.find(function(a){return a.id===dep.appId}) || {n:dep.app};
+  var sections = (CTRL_DATA.sections||[]).filter(function(s){return s.app===app.n});
+  return '<button class="back" data-go="cli">← Volver a clientes</button>'
+    +'<div class="head"><div><h3 style="margin:0;font-size:20px">'+cli.n+' · '+app.n+'</h3><p>Correo: '+escapeHtml(cli.email||'Sin correo')+' · Estado: '+escapeHtml(cli.est||'-')+'</p><p>'+app.n+' · '+dep.plan+' · '+pill(dep.est)+'</p></div>'
+    +'<button class="btn" data-savecfg="'+dep.id+'">Guardar cambios</button></div>'
+    +'<div class="panel"><div class="cfg">'
+    +'<div><label for="cfgNombre" style="margin-top:0">Nombre visible en la app</label><input id="cfgNombre" value="'+escapeHtml(cfg.nombreVisible)+'"></div>'
+    +'<div><label for="cfgEstado" style="margin-top:0">Estado del despliegue</label><select id="cfgEstado"><option value="borrador"'+(dep.est==='borrador'?' selected':'')+'>borrador</option><option value="activo"'+(dep.est==='activo'?' selected':'')+'>activo</option><option value="suspendido"'+(dep.est==='suspendido'?' selected':'')+'>suspendido</option></select></div>'
+    +'<div><label for="cfgIdiomas" style="margin-top:0">Idiomas (coma)</label><input id="cfgIdiomas" value="'+escapeAttr((cfg.idiomas||['es']).join(', '))+'"></div>'
+    +'<div><label for="cfgSubdominio" style="margin-top:0">Subdominio app (sin dominio, p. ej. aytordera)</label><input id="cfgSubdominio" value="'+escapeAttr(dep.subdominio||'')+'"></div>'
++'<div><label for="cfgFondo" style="margin-top:0">Fondos permitidos (coma)</label><input id="cfgFondo" value="'+escapeAttr((cfg.fondos||[]).join(', '))+'"></div><div><label for="cfgPlan" style="margin-top:0">Plan</label><select id="cfgPlan">'+((CTRL_DATA.plans||[]).map(function(p){return '<option value="'+escapeAttr(p.id)+'" '+(p.id===dep.paqueteId?'selected':'')+'>'+escapeHtml(p.n)+'</option>'}).join(''))+'"></select></div></div></div>'
+    +'<div class="panel"><h3>Guardrails IA (seguridad)</h3><div class="cfg">'  +'<div><label for="cfgGuardrail" style="margin-top:0">Guardrail de seguridad</label><textarea id="cfgGuardrail" style="width:100%;min-height:80px;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surf);color:var(--ink);font:inherit">'+escapeHtml(cfg.guardrail||'')+'</textarea></div>'  +'<div><label for="cfgFuentesIA" style="margin-top:0">Fuentes/email IDs IA (coma)</label><input id="cfgFuentesIA" value="'+escapeAttr((cfg.fuentesIA||[]).join(', '))+'"></div>'  +'<div><label for="cfgTemasPermitidos" style="margin-top:0">Temas permitidos (coma)</label><input id="cfgTemasPermitidos" value="'+escapeAttr((cfg.temasPermitidos||[]).join(', '))+'"></div>'  +'<div><label for="cfgTemasProhibidos" style="margin-top:0">Temas prohibidos (coma)</label><input id="cfgTemasProhibidos" value="'+escapeAttr((cfg.temasProhibidos||[]).join(', '))+'"></div>'  +'<div><label for="cfgMaxTokens" style="margin-top:0">Max tokens IA (opcional)</label><input id="cfgMaxTokens" value="'+escapeAttr(cfg.maxTokens||'')+'"></div>'  +'</div></div>'
+  +'<div class="panel"><label style="margin-top:0">Prompt de perfil (IA)</label><textarea id="cfgPrompt" style="width:100%;min-height:120px;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surf);color:var(--ink);font:inherit">'+escapeHtml(cfg.prompt||'')+'</textarea></div>'
+    +'<div class="panel"><h3>Assets del despliegue</h3><div class="cfg">'  +'<div><label for="cfgAvataresDespliegue" style="margin-top:0">Avatares permitidos (IDs, coma)</label><input id="cfgAvataresDespliegue" value="'+escapeAttr((cfg.avatares||[]).join(', '))+'"></div>'  +'<div><label for="cfgFondosIA" style="margin-top:0">Fondos permitidos por IA (IDs, coma)</label><input id="cfgFondosIA" value="'+escapeAttr((cfg.fondosIA||[]).join(', '))+'"></div>'  +'<div><label for="cfgDocsIA" style="margin-top:0">Documentos autorizados (IDs, coma)</label><input id="cfgDocsIA" value="'+escapeAttr((cfg.documentos||[]).join(', '))+'"></div>'  +'</div></div>'
+  +'<div class="panel"><h3>Secciones visibles para este despliegue</h3><div class="mods">'
+    + (sections.length?sections.map(function(s){var on=(cfg.secciones||[]).includes(s.key);return '<div class="mod"><div class="t">'+s.key+'<small>'+s.nombre+'</small></div><button class="sw" role="switch" aria-label="'+s.key+'" aria-checked="'+on+'" data-cfgsection="'+s.key+'"></button></div>'}).join('') : '<p>Sin secciones aún.</p>')
+    + '</div></div>';
+},
+app:function(){
+  var rows=(CTRL_DATA.apps.length?CTRL_DATA.apps:apps).map(function(a){return [a.n,a.v,a.sec,a.cli,pill(a.est)]});
+  var secRows=(CTRL_DATA.sections.length?CTRL_DATA.sections:[]).map(function(s){return [s.key,s.nombre,s.app,s.tipo,pill(s.activa?'Activo':'Inactivo')]});
+  return '<div class="head"><p>Catálogo de aplicaciones y sus secciones versionadas.</p><button class="btn" data-t="Alta de aplicación: pendiente de implementar">Nueva aplicación</button></div><div class="panel">'+tbl(['Aplicación','Versión','Secciones','Clientes','Estado'],rows)+'</div><div class="panel"><h3>Secciones reales de Supabase</h3>'+tbl(['Sección key','Nombre visible','App','Tipo','Estado'],secRows)+'</div>';
+},
+pla:function(){
+  return '<div class="panel"><h3>Aura Municipal: qué incluye cada plan</h3>'+tbl(['Sección'].concat(planes.map(function(p){return p.n+' · '+p.p+' €'})),mods.map(function(m,i){return [m].concat(planes.map(function(p){return p.m[i]?'<span class="ck">✓</span>':'<span style="color:var(--mut)">—</span>'}))}))+'</div>';
+},
+usu:function(){
+  return '<div class="head"><p>Equipo interno y usuarios de clientes.</p><button class="btn" data-t="Alta de usuario: pendiente de implementar">Nuevo usuario</button></div><div class="panel">'+tbl(['Nombre','Correo','Cliente','Rol','Estado'],[['Marta Soler','marta@taridev.com','Equipo interno','Superadmin',pill('Activo')],['Jordi Puig','jordi@taridev.com','Equipo interno','Soporte',pill('Activo')],['Anna Vidal','avidal@vilanova.cat','Ayuntamiento de Vilanova','Admin cliente',pill('Activo')],['Pau Ferrer','pau@costadorada.es','Inmobiliaria Costa Dorada','Usuario',pill('Activo')],['Laia Roca','laia@santjordi.cat','Colegio Sant Jordi','Admin cliente',pill('Activo')]])+'</div>';
+},
+ven:function(){
+  return '<div class="panel">'+tbl(['Factura','Cliente','Fecha','Total','Estado'],[['F-2026-0142','Colegio Sant Jordi','02/10/2026','189,00 €',pill('Pagada')],['F-2026-0141','Ayuntamiento de Vilanova','01/10/2026','79,00 €',pill('Pagada')],['F-2026-0140','Inmobiliaria Costa Dorada','01/10/2026','29,00 €',pill('Pendiente')],['F-2026-0139','Clínica Dental Mar','01/09/2026','29,00 €',pill('Vencida')]])+'</div>';
+},
+sec:function(){var rows=(CTRL_DATA.sections.length?CTRL_DATA.sections:[]).map(function(s){return [s.key,s.nombre,s.app,s.tipo,pill(s.activa?'Activo':'Inactivo')]});return '<div class="head"><p>Catálogo real de secciones desde Supabase.</p><button class="btn" data-t="Alta de sección: pendiente de implementar">Nueva sección</button></div><div class="panel">'+tbl(['Sección key','Nombre visible','App','Tipo','Estado'],rows)+'</div>';},
+act:function(){
+ const rows=(CTRL_DATA.despliegues||[]).map(function(d){
+   const c=(CTRL_DATA.clientes||[]).find(function(x){return x.id===d.clienteId});
+   return [ (d.descriptor||d.id), (c?c.n:d.clienteId), d.app, d.plan||'-', d.subdominio||'—', d.entorno, pill(d.est), '<button class="btn ghost" data-activate="'+d.id+'">Activar</button><button class="btn ghost" data-suspend="'+d.id+'">Suspender</button>'];
+ });
+ return '<div class="head"><p>Despliegues reales y su estado actual.</p></div><div class="panel">'+tbl(['Descriptor','Cliente','App','Plan','Subdominio','Entorno','Estado','Acción'], rows.map(function(r){return [r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7]]}))+'</div>';
+},
+ai:function(){return '<div class="head"><p>Guardrails de datos y prompts por despliegue.</p></div><div class="panel">'+tbl(['Cliente','Fuentes autorizadas','Alcance','Prompt base editable'],aiSources.map(function(a){return [a.cli,a.fuentes.join(', '),a.scope,a.prompt]}))+'</div><div class="panel"><h3>Reglas inmutables</h3><ul class="list"><li><div>La app solo consulta fuentes asignadas<small>El prompt editable no puede ampliar el alcance de datos.</small></div><span class="pill b">Backend</span></li><li><div>No se exponen secretos ni configuración sensible<small>IA keys y tokens permanecen fuera de la PWA.</small></div><span class="pill b">Seguridad</span></li><li><div>Cambios de guardrails se auditán<small>Incluyen responsable, motivo y hash de la revisión.</small></div><span class="pill n">Trazabilidad</span></li></ul></div>';},
+aud:function(){
+  var rows=(CTRL_DATA.audits||[]).map(function(x){
+    return [String(x.creado||'').replace('T',' ').slice(0,19), x.actor||'-', x.role||'-', x.accion||'-', x.tipo||'-', x.entidadId||'-', x.desc||'', JSON.stringify(x.detalle||{}).slice(0,100)];
+  });
+  var body = rows.length ? tbl(['Fecha','Actor','Rol','Acción','Entidad','ID','Descripción','Detalle'], rows) : '<div class="panel"><h3>Sin auditoría todavía</h3><p>Las acciones reales se registrarán aquí.</p></div>';
+  return '<div class="head"><p>Auditoría real desde Supabase.</p></div><div class="panel">'+body+'</div>';
+},
+};
+function show(v){
+  st.v=v;nav();
+  $('#title').textContent=v==='cfg'?'Configuración de cliente':pages.filter(function(p){return p[0]===v})[0][1];
+  $('#view').innerHTML=V[v]();window.scrollTo(0,0);
+}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){e.classList.remove('on')},1800)}
+$('#go').onclick=async function(){
+  try{
+    const d=await supabaseLogin($('#em').value,$('#pw').value);
+    setRoleUI(d.user?.app_metadata?.role||'user');
+    $('#login').style.display='none';$('#app').style.display='grid';show('dash');
+    void refreshControlData();
+    toast('Sesión iniciada: '+st.role);
+  }catch(e){toast(e.message)}
+};
+if(localStorage.getItem('td.token')){setRoleUI(localStorage.getItem('td.role')||'user');$('#login').style.display='none';$('#app').style.display='grid';show('dash');void refreshControlData()}
+$('#theme').onclick=function(){var r=document.documentElement,d=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);r.dataset.theme=d?'light':'dark'};
+document.addEventListener('click',async function(e){
+  var t=e.target.closest('[data-go],[data-c],[data-m],[data-t],[data-newclient],[data-newdeploy],[data-opencfg],[data-savecfg],[data-activate],[data-suspend],[data-editclient],[data-deleteclient],#out');if(!t)return;
+  if(t.id==='out'){clearAuth();setRoleUI('user');$('#roleBadge').textContent='--';$('#app').style.display='none';$('#login').style.display='grid';return}
+  if(t.dataset.go)return show(t.dataset.go);
+  if(t.dataset.c!==undefined){st.c=+t.dataset.c;return show('cfg')}
+  if(t.dataset.m!==undefined){var c=clientes[st.c],i=+t.dataset.m,n=!eff(c,i);if(n===!!planes[c.plan].m[i])delete c.ov[i];else c.ov[i]=n;return show('cfg')}
+  if(t.dataset.newclient){await createClient();return}
+  if(t.dataset.newdeploy){await relateDeployment(t.dataset.newdeploy);return}
+  if(t.dataset.opencfg){var d=CTRL_DATA.despliegues.find(function(x){return String(x.id)===String(t.dataset.opencfg)});if(d)st.clienteId=d.clienteId;st.despliegueId=t.dataset.opencfg;show('cfg');return}
+  if(t.dataset.savecfg){await saveDeploymentConfig(t.dataset.savecfg);return}
+  if(t.dataset.activate){var da=t.dataset.activate;try{await sbPatch('despliegues','id',da,{estado:'activo'});toast('Despliegue activado');await refreshControlData()}catch(e){toast('Error: '+e.message)};return}
+  if(t.dataset.suspend){var ds=t.dataset.suspend;try{await sbPatch('despliegues','id',ds,{estado:'suspendido'});toast('Despliegue suspendido');await refreshControlData()}catch(e){toast('Error: '+e.message)};return}
+  if(t.dataset.editclient){await editClient(t.dataset.editclient);return}
+  if(t.dataset.deleteclient){await deleteClient(t.dataset.deleteclient);return}
+  if(t.dataset.t)toast(t.dataset.t);
+});
+document.addEventListener('change',function(e){if(e.target.id==='pl'){clientes[st.c].plan=+e.target.value;clientes[st.c].ov={};show('cfg')}});
+</script>
+</body>
+</html>
